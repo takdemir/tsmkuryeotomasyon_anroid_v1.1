@@ -1,11 +1,11 @@
 /**
- * Created by taner on 14.11.2016.
+ * Created by taner on 02.06.2018.
  */
 
 $(document).ready(function () {
 
     $('#myTabs a').click(function (e) {
-        e.preventDefault()
+        e.preventDefault();
         $(this).tab('show')
     })
 
@@ -21,7 +21,7 @@ document.addEventListener("deviceready",onDeviceReadyForMyPanel,false);
 function onDeviceReadyForMyPanel(){
 
     <!--Initializing Push Notification-->
-    var push = PushNotification.init({
+    let push = PushNotification.init({
 
         <!--Setting attributes for Android, IOS and Windows-->
         android: {
@@ -41,7 +41,7 @@ function onDeviceReadyForMyPanel(){
     });
     push.on('notification', function(data) {
 
-        if(window.localStorage.getItem("kuryeID")!="" && window.localStorage.getItem("kuryeID")>0) {
+        if(window.localStorage.getItem("kuryeID")!=="" && window.localStorage.getItem("kuryeID")>0) {
             mypanel.getjobsOnkurye(window.localStorage.getItem("kuryeID"));
             mypanel.getdeliveredjobsOnkurye(window.localStorage.getItem("kuryeID"));
         }
@@ -53,8 +53,8 @@ function onDeviceReadyForMyPanel(){
             'Tamam'                  // buttonName
         );
 
-        var beepsound = common.getpreferencebyname('beepsound');
-        var vibratetime = common.getpreferencebyname('vibratetime');
+        let beepsound = common.getpreferencebyname('beepsound');
+        let vibratetime = common.getpreferencebyname('vibratetime');
         navigator.notification.beep(beepsound);
         navigator.notification.vibrate(vibratetime);
 
@@ -67,21 +67,21 @@ function onDeviceReadyForMyPanel(){
 
 
 
-    var callbackFn = function (location) {
+    let callbackFn = function (location) {
 
-        var regid = window.localStorage.getItem("regid");
-        var kuryeID = window.localStorage.getItem("kuryeID");
-        var latitude = location.latitude;
-        var longitude = location.longitude;
+        let regid = window.localStorage.getItem("regid");
+        let kuryeID = window.localStorage.getItem("kuryeID");
+        let latitude = location.latitude;
+        let longitude = location.longitude;
 
 
 
-        if (latitude != "" && longitude != "") {
+        if (latitude !== "" && longitude !== "") {
 
-            var data = {"regid": regid, "kuryeID": kuryeID, "latitude": latitude, "longitude": longitude}
+            let data = {"regid": regid, "tsmCourierId": kuryeID, "latitude": latitude, "longitude": longitude}
             <!--Passing those values to the insertregid.php file-->
             $.ajax({
-                url: window.localStorage.getItem("ipurl") + "/insertposition",
+                url: window.localStorage.getItem("ipurl") + "/setcourierposition",
                 type: "POST",
                 data: JSON.stringify(data),
                 dataType: 'json',
@@ -135,36 +135,16 @@ function onDeviceReadyForMyPanel(){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 
 
 
-var mypanel={
+let mypanel={
 
     checklogin: function () {
 
-        if(window.localStorage.getItem("kuryeID")=="" || window.localStorage.getItem("kuryeID")==null){
+        if(window.localStorage.getItem("kuryeID")==="" || window.localStorage.getItem("kuryeID")===null){
            window.location.href="login.html";
         }
     },
@@ -177,10 +157,10 @@ var mypanel={
     },
     getjobsOnkurye: function (kuryeID) {
 
-        var data={"kuryeID":kuryeID};
+        let data={"courierId":kuryeID};
 
         $.ajax({
-            url: window.localStorage.getItem("ipurl")+"/getjobsonkurye",
+            url: window.localStorage.getItem("ipurl")+"/getcourierworkonsforandroid",
             type: "POST",
             data: JSON.stringify(data),
             dataType: "json",
@@ -194,33 +174,75 @@ var mypanel={
 
 
 
-                    if(data.data!=""){
+                    if(data.data!==""){
 
-                        var table="";
+                        let table="";
 
 
 
-                        var i = 1;
-                        var y = 0;
+                        let i = 1;
+                        let y = 0;
                         $.each(data.data, function (k,v) {
 
-                            var accordionOpen="";
-                            if(i==1){
+                            let accordionOpen="";
+                            if(i===1){
                                accordionOpen="";
                             }
 
-                            var headId="heading"+i;
-                            var collapseId="collapse"+i;
+                            let headId="heading"+i;
+                            let collapseId="collapse"+i;
 
-                                var color = "panel-default";
-                                if(v.alimsaati!=""){color = "panel-warning";}
+                            let pickupCustomerName = "";
+                            let pickupCustomerDistrict = "";
+                            let pickupCustomerAddress = "";
+                            let pickupCustomerPhone = "";
+                            let pickupCustomerNote = "";
+
+                            if(v.tsmf2===null || v.tsmf2==='' || v.isF2Fake){
+                                pickupCustomerName= v.tsmf1.name;
+                                pickupCustomerDistrict = v.tsmf1.tsmdistrict.districtName;
+                                pickupCustomerAddress = v.tsmf1.address;
+                                pickupCustomerPhone = v.tsmf1.phone;
+                                pickupCustomerNote = v.tsmf1.note;
+                            }else{
+                                pickupCustomerName= v.tsmf2.name;
+                                pickupCustomerDistrict = v.tsmf2.tsmdistrict.districtName;
+                                pickupCustomerAddress = v.tsmf2.address;
+                                pickupCustomerPhone = v.tsmf2.phone;
+                                pickupCustomerNote = v.tsmf2.note;
+                            }
+
+                            let paymentStatusOriginal = v.tsmcustomerinvoices.paymentStatus;
+                            let paymentStatus = 'Ödendi';
+                            if(paymentStatusOriginal==='Unpaid'){
+                                paymentStatus = 'Ödenmedi';
+                            }
+
+                            let deliverToCourierTimeOriginal = v.deliverToCourierTime;
+                            let deliverToCourierTime = "";
+                            let explodeTime = deliverToCourierTimeOriginal.split(' ');
+                            deliverToCourierTime = explodeTime[1];
+
+                            let officialName = "-";
+
+                            if(v.tsmf3.tsmadminofficials !== null && v.tsmf3.tsmadminofficials!=="" && Object.keys(v.tsmf3.tsmadminofficials)>0){
+                                $.each(v.tsmf3.tsmadminofficials, function (kk,vv) {
+
+                                    officialName += vv.name+'-->'+vv.mobilePhone+'<br>';
+
+                                });
+
+                            }
+
+                            let color = "panel-default";
+                                if(v.pickupDate!=="" && v.pickupDate!==null){color = "panel-warning";}
                                 table+='<div class="panel '+color+'">'+
 
 
                                 '<div class="panel-heading" role="tab" id="'+headId+'">'+
                                 '<h4 class="panel-title">'+
                                 '<a role="button" data-toggle="collapse" data-parent="#accordion" href="#'+collapseId+'" aria-expanded="true" aria-controls="'+collapseId+'">'+
-                                i+'.Gönderi ('+v.alinansemt+' - '+v.teslimsemt+')'+
+                                i+'.Gönderi ('+pickupCustomerDistrict+' - '+v.tsmf3.tsmdistrict.districtName+')'+
                                 '</a>'+
                                 '</h4>'+
                                 '</div>'+
@@ -230,41 +252,64 @@ var mypanel={
                                 '<div class="panel panel-primary"><div class="panel-heading">ALINACAK</div><div class="panel-body">'+
                                     '<table class="table table-bordered">'+
                                         '<tr>'+'<th>Gönderi Nu.:</th>'+'<td>'+v.id+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Alınacak Kişi</th>'+'<td>'+v.alinankisi+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Alınacak Semt</th>'+'<td>'+v.alinansemt+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Alınacak Adres</th>'+'<td>'+v.alinanadres+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Tel:</th>'+'<td>'+v.kayitverencep+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Not1</th>'+'<td>'+v.not1+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Alınacak Kişi</th>'+'<td>'+pickupCustomerName+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Alınacak Semt</th>'+'<td>'+pickupCustomerDistrict+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Alınacak Adres</th>'+'<td>'+pickupCustomerAddress+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Tel:</th>'+'<td>'+pickupCustomerPhone+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Not1</th>'+'<td>'+pickupCustomerNote+'</td>'+'</tr>'+
                                     '</table>'+
                                  '</div></div>'+
                                  '<div class="panel panel-primary"><div class="panel-heading">TESLİM EDİLECEK</div><div class="panel-body">'+
                                     '<table class="table table-bordered">'+
-                                        '<tr>'+'<th>Teslim Ed.Kisi</th>'+'<td>'+v.teslimkisi+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Teslim Ed.Semt</th>'+'<td>'+v.teslimsemt+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Teslim Ed.Adres</th>'+'<td>'+v.teslimadres+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Tel:</th>'+'<td>'+v.f3cep+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Not3</th>'+'<td>'+v.not3+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Teslim Ed.Kisi</th>'+'<td>'+v.tsmf3.name+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Teslim Ed.Semt</th>'+'<td>'+v.tsmf3.tsmdistrict.districtName+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Teslim Ed.Adres</th>'+'<td>'+v.tsmf3.address+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Tel:</th>'+'<td>'+v.tsmf3.phone+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Not3</th>'+'<td>'+v.tsmf3.note+'</td>'+'</tr>'+
                                     '</table>'+
                                  '</div></div>'+
                                  '<div class="panel panel-primary"><div class="panel-heading">DİĞER BİLGİLER</div><div class="panel-body">'+
                                     '<table class="table table-bordered">'+
-                                        '<tr>'+'<th>Tutar</th>'+'<td>'+v.tutar+' TL</td>'+'</tr>'+
-                                        '<tr>'+'<th>İşlem Tipi</th>'+'<td>'+v.islemtipi+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Ödeme</th>'+'<td>'+v.odemedurumu+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Okuma Saati</th>'+'<td>'+v.okumasaati+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Yetkili</th>'+'<td>'+v.yetkiliname+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Yetkili Telefon</th>'+'<td>'+v.yetkilitel+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Kayıt Veren (F1):</th>'+'<td>'+v.kayitveren+'</td>'+'</tr>'+
-                                        '<tr>'+'<th>Kayıt Veren Tel:</th>'+'<td>'+v.kayitverencep+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Tutar</th>'+'<td>'+v.tsmcustomerinvoices.total+' TL</td>'+'</tr>'+
+                                        '<tr>'+'<th>İşlem Tipi</th>'+'<td>'+v.tsmdeliveryType.name+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Ödeme</th>'+'<td>'+paymentStatus+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Okuma Saati</th>'+'<td>'+deliverToCourierTime+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Teslimat Yetkili(ler)</th>'+'<td>'+officialName+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Kayıt Veren (F1):</th>'+'<td>'+v.tsmf1.name+'</td>'+'</tr>'+
+                                        '<tr>'+'<th>Kayıt Veren Tel:</th>'+'<td>'+v.tsmf1.phone+'</td>'+'</tr>';
                                         /*'<tr>'+'<th>F2 Tel.:</th>'+'<td>'+v.f2cep+'</td>'+'</tr>'+*/
 
-                                        '<tr>'+'<td></td>'+'<td><input type="button" onclick="mypanel.executeonjob('+v.id+',\'alindi\','+(i-1)+')" class="btn btn-warning" value="Alındı" /> </td>'+'</tr>'+
-                                        '<tr>'+'<td>' +
-                                            '<input type="text" placeholder="Teslim Edilen" name="teslimEdilen" class="form-control" />' +
-                                            '<input type="text" placeholder="Teslim Saati" name="teslimSaati" class="form-control" onclick="mypanel.getteslimsaati('+(i-1)+')" /> </td>'+
-                                            '<td><input type="button" onclick="mypanel.executeonjob('+v.id+',\'teslim\','+(i-1)+')" class="btn btn-success" value="Teslim" /> </td>'+
-                                        '</tr>'+
-                                '</table>'+
+                                        if(v.willBringBack===1 && (v.isBackTaken===0 || v.backDeliveredPerson==='')){
+
+                                            table +='<tr>'+'<td></td>'+'<td><input type="button" onclick="mypanel.executeonjob('+v.id+',\'pickup\','+(i-1)+')" class="btn btn-warning" value="Alındı" /> </td>'+'</tr>'+
+                                                    '<tr>'+'<td>' +
+                                                    '<input type="text" placeholder="İlk Gön. Tes.Ed.Kişi" name="deliveredName" class="form-control" />' +
+                                                    '<input type="text" placeholder="İlk Gön. Tes.Ed.Şirket" name="deliveredCompany" class="form-control" />' +
+                                                    '<td><input type="button" onclick="mypanel.executeonjob('+v.id+',\'backorderdelivered\','+(i-1)+')" class="btn btn-success" value="Teslim" /> </td>'+
+                                                    '</tr>';
+
+                                        }else if(v.willBringBack===1 && (v.isBackTaken===1 || v.backDeliveredPerson==='')){
+
+                                            table +='<tr>'+'<td></td>'+'<td><input type="button" onclick="mypanel.executeonjob('+v.id+',\'pickup\','+(i-1)+')" class="btn btn-warning" value="Alındı" /> </td>'+'</tr>'+
+                                                '<tr>'+'<td>' +
+                                                '<input type="text" placeholder="Teslim Ed.Kişi" name="deliveredName" class="form-control" />' +
+                                                '<input type="text" placeholder="Teslim Ed.Şirket" name="deliveredCompany" class="form-control" />' +
+                                                '<td><input type="button" onclick="mypanel.executeonjob('+v.id+',\'delivered\','+(i-1)+')" class="btn btn-success" value="Teslim" /> </td>'+
+                                                '</tr>';
+
+                                        }else{
+
+                                            table +='<tr>'+'<td></td>'+'<td><input type="button" onclick="mypanel.executeonjob('+v.id+',\'pickup\','+(i-1)+')" class="btn btn-warning" value="Alındı" /> </td>'+'</tr>'+
+                                                    '<tr>'+'<td>' +
+                                                    '<input type="text" placeholder="Teslim Ed.Kişi" name="deliveredName" class="form-control" />' +
+                                                    '<input type="text" placeholder="Teslim Ed.Şirket" name="deliveredCompany" class="form-control" /> </td>'+
+                                                    '<td><input type="button" onclick="mypanel.executeonjob('+v.id+',\'delivered\','+(i-1)+')" class="btn btn-success" value="Teslim" /> </td>'+
+                                                    '</tr>';
+
+                                        }
+
+
+                                table +='</table>'+
                                     '</div></div>'+
 
 
@@ -279,9 +324,8 @@ var mypanel={
 
                         });
 
-                        $("#accordion").html("");
 
-                        $("#accordion").html(table);
+                        $("#accordion").html("").html(table);
 
                         $("#uzerimdekiisCount").html(y);
 
@@ -296,10 +340,10 @@ var mypanel={
     },
     getdeliveredjobsOnkurye: function (kuryeID) {
 
-        var data={"kuryeID":kuryeID};
+        let data={"courierId":kuryeID};
 
         $.ajax({
-            url: window.localStorage.getItem("ipurl")+"/getdeliveredjobsonkurye",
+            url: window.localStorage.getItem("ipurl")+"/getcourierdeliveredworksforandroid",
             type: "POST",
             data: JSON.stringify(data),
             dataType: "json",
@@ -313,23 +357,83 @@ var mypanel={
 
 
 
-                if(data.data!=""){
+                if(data.data!==""){
 
-                    var table="";
+                    let table="";
 
 
 
-                    var i = 1;
-                    var y = 0;
+                    let i = 1;
+                    let y = 0;
                     $.each(data.data, function (k,v) {
 
-                        var accordionOpen="";
-                        if(i==1){
+                        let accordionOpen="";
+                        if(i===1){
                             accordionOpen="";
                         }
 
-                        var headId="heading"+(i+100);
-                        var collapseId="collapse"+(i+100);
+                        let headId="heading"+(i+100);
+                        let collapseId="collapse"+(i+100);
+
+
+                        let pickupCustomerName = "";
+                        let pickupCustomerDistrict = "";
+                        let pickupCustomerAddress = "";
+                        let pickupCustomerPhone = "";
+                        let pickupCustomerNote = "";
+
+                        if(v.tsmf2===null || v.tsmf2==='' || v.isF2Fake){
+                            pickupCustomerName= v.tsmf1.name;
+                            pickupCustomerDistrict = v.tsmf1.tsmdistrict.districtName;
+                            pickupCustomerAddress = v.tsmf1.address;
+                            pickupCustomerPhone = v.tsmf1.phone;
+                            pickupCustomerNote = v.tsmf1.note;
+                        }else{
+                            pickupCustomerName= v.tsmf2.name;
+                            pickupCustomerDistrict = v.tsmf2.tsmdistrict.districtName;
+                            pickupCustomerAddress = v.tsmf2.address;
+                            pickupCustomerPhone = v.tsmf2.phone;
+                            pickupCustomerNote = v.tsmf2.note;
+                        }
+
+                        let paymentStatusOriginal = v.tsmcustomerinvoices.paymentStatus;
+                        let paymentStatus = 'Ödendi';
+                        if(paymentStatusOriginal==='Unpaid'){
+                            paymentStatus = 'Ödenmedi';
+                        }
+
+                        let deliverToCourierTimeOriginal = v.deliverToCourierTime;
+                        let deliverToCourierTime = "";
+                        let explodeTime = deliverToCourierTimeOriginal.split(' ');
+                        deliverToCourierTime = explodeTime[1];
+
+
+                        let pickedupTimeOriginal = v.pickupDate;
+                        let pickedUpTime = "";
+                        let explodePickedupTime = pickedupTimeOriginal.split(' ');
+                        pickedUpTime = explodePickedupTime[1];
+
+                        let deliveredTimeOriginal = v.deliveredDate;
+                        let deliveredTime = "";
+                        let explodeDeliveredTime = deliveredTimeOriginal.split(' ');
+                        deliveredTime = explodeDeliveredTime[1];
+
+
+                        let officialName = "-";
+
+                        if(v.tsmf3.tsmadminofficials !== null && v.tsmf3.tsmadminofficials!=="" && Object.keys(v.tsmf3.tsmadminofficials)>0){
+                            $.each(v.tsmf3.tsmadminofficials, function (kk,vv) {
+
+                                officialName += vv.name+'-->'+vv.mobilePhone+'<br>';
+
+                            });
+
+                        }
+
+                        let deliveredPhone = "-";
+                        if(v.tsmf3.mobilePhone!=="" && v.tsmf3.mobilePhone!==null){
+                            deliveredPhone = v.tsmf3.mobilePhone;
+                        }
 
 
 
@@ -349,26 +453,24 @@ var mypanel={
 
                             '<table class="table table-bordered">'+
                             '<tr>'+'<th>Gönderi Nu.:</th>'+'<td>'+v.id+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Al.Kişi</th>'+'<td>'+v.alinankisi+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Al.Semt</th>'+'<td>'+v.alinansemt+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Al.Adres</th>'+'<td>'+v.alinanadres+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Tes.Kisi</th>'+'<td>'+v.teslimkisi+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Tes.Semt</th>'+'<td>'+v.teslimsemt+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Tes.Adres</th>'+'<td>'+v.teslimadres+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Tutar</th>'+'<td>'+v.tutar+' TL</td>'+'</tr>'+
-                            '<tr>'+'<th>İşlem Tipi</th>'+'<td>'+v.islemtipi+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Ödeme</th>'+'<td>'+v.odemedurumu+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Ok.Saati</th>'+'<td>'+v.okumasaati+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Alım Saati</th>'+'<td>'+v.alimsaati+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Teslim Saati</th>'+'<td>'+v.teslimsaati+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Teslim Alan</th>'+'<td>'+v.teslimalan+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Yetkili</th>'+'<td>'+v.yetkiliname+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Yetkili Telefon</th>'+'<td>'+v.yetkilitel+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Not</th>'+'<td>'+v.not+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Kayıt Veren (F1):</th>'+'<td>'+v.kayitveren+'</td>'+'</tr>'+
-                            '<tr>'+'<th>Kayıt Veren Tel.:</th>'+'<td>'+v.kayitverencep+'</td>'+'</tr>'+
-                            '<tr>'+'<th>F2 Tel.:</th>'+'<td>'+v.f2cep+'</td>'+'</tr>'+
-                            '<tr>'+'<th>F3 Tel.:</th>'+'<td>'+v.f3cep+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Al.Kişi</th>'+'<td>'+pickupCustomerName+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Al.Semt</th>'+'<td>'+pickupCustomerDistrict+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Al.Adres</th>'+'<td>'+pickupCustomerAddress+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Tes.Kisi</th>'+'<td>'+v.tsmf3.name+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Tes.Semt</th>'+'<td>'+v.tsmf3.tsmdistrict.districtName+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Tes.Adres</th>'+'<td>'+v.tsmf3.address+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Tutar</th>'+'<td>'+v.tsmcustomerinvoices.total+' TL</td>'+'</tr>'+
+                            '<tr>'+'<th>İşlem Tipi</th>'+'<td>'+v.tsmdeliveryType.name+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Ödeme</th>'+'<td>'+paymentStatus+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Ok.Saati</th>'+'<td>'+deliverToCourierTime+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Alım Saati</th>'+'<td>'+pickedUpTime+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Teslim Saati</th>'+'<td>'+deliveredTime+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Teslim Alan</th>'+'<td>'+v.deliveredPerson+' '+v.deliveredCompany+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Yetkili(ler)</th>'+'<td>'+officialName+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Kayıt Veren (F1):</th>'+'<td>'+v.tsmf1.name+'</td>'+'</tr>'+
+                            '<tr>'+'<th>Kayıt Veren Tel.:</th>'+'<td>'+v.tsmf1.mobilePhone+'</td>'+'</tr>'+
+                            '<tr>'+'<th>F2 Tel.:</th>'+'<td>'+pickupCustomerPhone+'</td>'+'</tr>'+
+                            '<tr>'+'<th>F3 Tel.:</th>'+'<td>'+deliveredPhone+'</td>'+'</tr>'+
                             '<tr>'+'<th>İşlemi Geri al</th>'+
                             '<td><input type="button" onclick="mypanel.getjobback('+v.id+')" value="Geri al" class="btn btn-danger" /></td>'+
                             '</tr>'+
@@ -384,9 +486,8 @@ var mypanel={
 
                     });
 
-                    $("#accordion2").html("");
 
-                    $("#accordion2").html(table);
+                    $("#accordion2").html("").html(table);
 
                     $("#teslimedilenisCount").html(y);
 
@@ -401,12 +502,12 @@ var mypanel={
     },
     executeonjob: function (jobID,executetype,eq) {
 
-        if(executetype=='alindi') {
+        if(executetype==='pickup') {
 
-            var data = {"islem": jobID, "action": "alındı"};
+            let data = {"tsmOrderId": jobID};
 
             $.ajax({
-                url: window.localStorage.getItem("ipurl") + "/registerislemlerikurye",
+                url: window.localStorage.getItem("ipurl") + "/setpickedupforandroid",
                 type: "POST",
                 data: JSON.stringify(data),
                 dataType: "json",
@@ -432,20 +533,58 @@ var mypanel={
 
             });
 
+        }else if(executetype==='backorderdelivered') {
+
+            let deliveredName = $('input[name="deliveredName"]:eq(' + eq + ')').val();
+            let deliveredCompanyName = $('input[name="deliveredCompany"]:eq(' + eq + ')').val();
+
+            let data = {"tsmOrderId": jobID,"deliveredName":deliveredName,"deliveredCompanyName":deliveredCompanyName};
+
+            if(deliveredName!=='' && deliveredName!==null) {
+
+                $.ajax({
+                    url: window.localStorage.getItem("ipurl") + "/setbackworkdeliverednameforandroid",
+                    type: "POST",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    beforeSend: function () {
+                        //alert("işler geliyor "+window.localStorage.getItem("ipurl")+" kuryeID:"+kuryeID);
+                    },
+                    error: function (a, b, c) {
+                        //alert("Hata: executejob" + a.responseText);
+                    },
+                    success: function (data) {
+
+                        if (!data.hasError) {
+
+                            mypanel.getjobsOnkurye(window.localStorage.getItem("kuryeID"));
+                            mypanel.getdeliveredjobsOnkurye(window.localStorage.getItem("kuryeID"));
+                            alert("Alındı bildirisi merkeze kaydedildi!");
+
+                        } else {
+                            alert("Alındı bildirilirken bir hata oluştu!");
+                        }
+
+                    }
+
+                });
+            }else{
+                alert('İlk Teslimatın yapıldığı ismi boş bırakmayınız!');
+            }
+
         }else{
 
-            var teslimEdilen=$("input[name='teslimEdilen']:eq(" + eq + ")").val();
-            var teslimsaati=$("input[name='teslimSaati']:eq(" + eq + ")").val();
-            if(teslimEdilen!="") {
-                var data = {
-                    "islem": jobID,
-                    "action": "teslim",
-                    "teslimalan": teslimEdilen,
-                    "teslimsaati": teslimsaati
+            let deliveredName=$("input[name='deliveredName']:eq(" + eq + ")").val();
+            let deliveredCompanyName=$("input[name='deliveredCompany']:eq(" + eq + ")").val();
+            if(deliveredName!=="") {
+                let data = {
+                    "tsmOrderId": jobID,
+                    "deliveredName": deliveredName,
+                    "deliveredCompanyName": deliveredCompanyName
                 };
 
                 $.ajax({
-                    url: window.localStorage.getItem("ipurl") + "/registerislemlerikurye",
+                    url: window.localStorage.getItem("ipurl") + "/setorderdeliveredforandroid",
                     type: "POST",
                     data: JSON.stringify(data),
                     dataType: "json",
@@ -479,12 +618,12 @@ var mypanel={
     },
     getjobback: function (jobID) {
 
-        var data = {
-            "id": jobID
+        let data = {
+            "tsmOrderId": jobID
         };
 
         $.ajax({
-            url: window.localStorage.getItem("ipurl") + "/teslimedilenisigerialkurye",
+            url: window.localStorage.getItem("ipurl") + "/getbackfromdeliveredforandroid",
             type: "POST",
             data: JSON.stringify(data),
             dataType: "json",
@@ -512,52 +651,52 @@ var mypanel={
     },
     getteslimsaati: function (eq) {
 
-        var date=new Date();
-        var day=date.getDate();
-        var month=date.getMonth()+1;
+        let date=new Date();
+        let day=date.getDate();
+        let month=date.getMonth()+1;
         if(month<10){
             month="0"+month;
         }
-        var year=date.getFullYear();
-        var hour=date.getHours();
+        let year=date.getFullYear();
+        let hour=date.getHours();
         if(hour<10){
             hour="0"+hour;
         }
-        var minute=date.getMinutes();
+        let minute=date.getMinutes();
         if(minute<10){
             minute="0"+minute;
         }
-        var second=date.getSeconds();
+        let second=date.getSeconds();
         if(second<10){
             second="0"+second;
         }
-        var teslimSaati=day+"-"+month+"-"+year+" "+hour+":"+minute+":"+second;
+        let teslimSaati=day+"-"+month+"-"+year+" "+hour+":"+minute+":"+second;
         $("input[name='teslimSaati']:eq("+eq+")").val(teslimSaati);
     },
     setlocations: function () {
 
-        var regid = window.localStorage.getItem("regid");
-        var kuryeID = window.localStorage.getItem("kuryeID");
+        let regid = window.localStorage.getItem("regid");
+        let kuryeID = window.localStorage.getItem("kuryeID");
 
-        if(kuryeID!="" && kuryeID>0) {
+        if(kuryeID!=="" && kuryeID>0) {
 
                 navigator.geolocation.getCurrentPosition(function (position) {
-                    var pos = {
+                    let pos = {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
                     };
 
-                    var latitude = position.coords.latitude;
-                    var longitude = position.coords.longitude;
+                    let latitude = position.coords.latitude;
+                    let longitude = position.coords.longitude;
 
 
 
-                    if (latitude != "" && longitude != "") {
+                    if (latitude !=="" && longitude !== "") {
 
-                        var data = {"regid": regid, "kuryeID": kuryeID, "latitude": latitude, "longitude": longitude}
+                        let data = {"regid": regid, "tsmCourierId": kuryeID, "latitude": latitude, "longitude": longitude}
                         <!--Passing those values to the insertregid.php file-->
                         $.ajax({
-                            url: window.localStorage.getItem("ipurl") + "/insertposition",
+                            url: window.localStorage.getItem("ipurl") + "/setcourierposition",
                             type: "POST",
                             data: JSON.stringify(data),
                             dataType: 'json',
@@ -600,28 +739,28 @@ var mypanel={
     },
     setlocationswithwatch: function () {
 
-        var regid = window.localStorage.getItem("regid");
-        var kuryeID = window.localStorage.getItem("kuryeID");
+        let regid = window.localStorage.getItem("regid");
+        let kuryeID = window.localStorage.getItem("kuryeID");
 
-        if(kuryeID!="" && kuryeID>0) {
+        if(kuryeID!=="" && kuryeID>0) {
 
             navigator.geolocation.watchPosition(function (position) {
-                var pos = {
+                let pos = {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                 };
 
-                var latitude = position.coords.latitude;
-                var longitude = position.coords.longitude;
+                let latitude = position.coords.latitude;
+                let longitude = position.coords.longitude;
 
 
 
-                if (latitude != "" && longitude != "") {
+                if (latitude !== "" && longitude !== "") {
 
-                    var data = {"regid": regid, "kuryeID": kuryeID, "latitude": latitude, "longitude": longitude}
+                    let data = {"regid": regid, "tsmCourierId": kuryeID, "latitude": latitude, "longitude": longitude}
                     <!--Passing those values to the insertregid.php file-->
                     $.ajax({
-                        url: window.localStorage.getItem("ipurl") + "/insertposition",
+                        url: window.localStorage.getItem("ipurl") + "/setcourierposition",
                         type: "POST",
                         data: JSON.stringify(data),
                         dataType: 'json',
@@ -681,29 +820,29 @@ function onPause() {
             backgroundGeolocation.getLocations(function (locations) {
                 //backgroundGeolocation.showLocationSettings();
 
-                var a= "1";
+                let a= "1";
                 locations.forEach(function (loc) {
                     //if ((now - loc.time) <= sameDayDiffInMillis) {
 
                     //}
                     a +="2";
                 });
-                var now = Date.now();
-                var sameDayDiffInMillis = 24 * 900 * 1000;
+                let now = Date.now();
+                let sameDayDiffInMillis = 24 * 900 * 1000;
                 //common.showToast(a,'long','center',0);
-                var regid = window.localStorage.getItem("regid");
-                var kuryeID = window.localStorage.getItem("kuryeID");
-                var latitude = "-122.084";
-                var longitude = "37.889900";
+                let regid = window.localStorage.getItem("regid");
+                let kuryeID = window.localStorage.getItem("kuryeID");
+                let latitude = "-122.084";
+                let longitude = "37.889900";
 
 
 
-                if (latitude != "" && longitude != "") {
+                if (latitude !== "" && longitude !== "") {
 
-                    var data = {"regid": regid, "kuryeID": kuryeID, "latitude": latitude, "longitude": longitude,"locations":locations}
+                    let data = {"regid": regid, "tsmCourierId": kuryeID, "latitude": latitude, "longitude": longitude,"locations":locations}
                     <!--Passing those values to the insertregid.php file-->
                     /*$.ajax({
-                        url: window.localStorage.getItem("ipurl") + "/insertposition",
+                        url: window.localStorage.getItem("ipurl") + "/setcourierposition",
                         type: "POST",
                         data: JSON.stringify(data),
                         dataType: 'json',
@@ -737,7 +876,7 @@ function onPause() {
 
 
 
-if(window.localStorage.getItem("kuryeID")!="" && window.localStorage.getItem("kuryeID")>0) {
+if(window.localStorage.getItem("kuryeID")!=="" && window.localStorage.getItem("kuryeID")>0) {
     mypanel.getjobsOnkurye(window.localStorage.getItem("kuryeID"));
     mypanel.getdeliveredjobsOnkurye(window.localStorage.getItem("kuryeID"));
 

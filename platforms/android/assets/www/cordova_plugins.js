@@ -175,7 +175,8 @@ module.exports.metadata =
   "cordova-plugin-insomnia": "4.3.0",
   "phonegap-plugin-push": "2.1.0",
   "cordova-plugin-mauron85-background-geolocation": "2.3.1",
-  "cordova-plugin-locationservices": "2.1.0"
+  "cordova-plugin-locationservices": "2.1.0",
+  "cordova-android-support-gradle-release": "3.0.0"
 };
 // BOTTOM OF METADATA
 });

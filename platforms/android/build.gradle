@@ -95,6 +95,7 @@ ext {
 // PLUGIN GRADLE EXTENSIONS START
 apply from: "phonegap-plugin-push/www-push.gradle"
 apply from: "cordova-plugin-mauron85-background-geolocation/www-logtofile.gradle"
+apply from: "cordova-android-support-gradle-release/www-cordova-android-support-gradle-release.gradle"
 // PLUGIN GRADLE EXTENSIONS END
 
 def hasBuildExtras = file('build-extras.gradle').exists()
@@ -262,7 +263,6 @@ dependencies {
     compile "com.google.firebase:firebase-messaging:11.0.1"
     compile "com.google.android.gms:play-services-location:11.0.1"
     compile "com.android.support:support-v4:+"
-    compile 'com.google.firebase:firebase-core:11.4.2'
     // SUB-PROJECT DEPENDENCIES END
 }
 

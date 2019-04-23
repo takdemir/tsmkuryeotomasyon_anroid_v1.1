@@ -8,9 +8,9 @@ document.addEventListener("deviceready",onDeviceReadyForAjaxjs,false);
 <!--Device Ready Function-->
 function onDeviceReadyForAjaxjs(){
     //alert("Device Ready");
-    common.shwToast('Kayıt yapılıyor!','short','bottom',0);
+    common.showToast('Kayıt yapılıyor!','short','bottom',0);
     <!--Initializing Push Notification-->
-    var push = PushNotification.init({
+    let push = PushNotification.init({
 
         <!--Setting attributes for Android, IOS and Windows-->
         android: {
@@ -27,11 +27,11 @@ function onDeviceReadyForAjaxjs(){
     <!--This will alert registration ID which is returned by the GCM-->
     push.on('registration', function(data) {
         window.localStorage.setItem("regid",data.registrationId);
-        common.shwToast('Kayıt başarılı!','short','bottom',0);
+        common.showToast('Kayıt başarılı!','short','bottom',0);
     });
     push.on('notification', function(data) {
 
-        if(window.localStorage.getItem("kuryeID")!="" && window.localStorage.getItem("kuryeID")>0) {
+        if(window.localStorage.getItem("kuryeID")!=="" && window.localStorage.getItem("kuryeID")>0) {
             mypanel.getjobsOnkurye(window.localStorage.getItem("kuryeID"));
             mypanel.getdeliveredjobsOnkurye(window.localStorage.getItem("kuryeID"));
         }
@@ -44,8 +44,8 @@ function onDeviceReadyForAjaxjs(){
         );
 
 
-        var beepsound = common.getpreferencebyname('beepsound');
-        var vibratetime = common.getpreferencebyname('vibratetime');
+        let beepsound = common.getpreferencebyname('beepsound');
+        let vibratetime = common.getpreferencebyname('vibratetime');
         navigator.notification.beep(beepsound);
         navigator.notification.vibrate(vibratetime);
 
@@ -59,22 +59,22 @@ function onDeviceReadyForAjaxjs(){
 }
 
 
-var login={
+let login={
 
     sessionID: null,
     sessionName: null,
     sessionKuryeId: null,
-    getipurl: "https://tbmsoft.xyz",
+    getipurl: "https://kuryeotomasyon.com/api",
 
     getip: function () {
 
-        var sirketid=$("#txt-sirketid").val();
-        var data={"sirketid":sirketid};
+        let companyId=$("#txt-sirketid").val();
+        let data={"companyId":companyId};
 
-        if(sirketid.trim()!="" && !isNaN(sirketid.trim())) {
+        if(companyId.trim()!=="" && !isNaN(companyId.trim())) {
 
             $.ajax({
-                url: login.getipurl + "/getsirketip",
+                url: login.getipurl + "/getcompanyip",
                 type: "POST",
                 data: JSON.stringify(data),
                 dataType: "json",
@@ -87,7 +87,7 @@ var login={
                 success: function (data) {
 
                     if (!data.hasError) {
-                        window.localStorage.setItem("ipurl", data.data);
+                        window.localStorage.setItem("ipurl", data.data.ip);
                         login.login();
                     } else {
                         alert(data.msg);
@@ -102,12 +102,12 @@ var login={
     },
     login: function () {
 
-        var username=$("#txt-email").val();
-        var password=$("#txt-password").val();
-        var data={"username":username,"password":password};
+        let username=$("#txt-email").val();
+        let password=$("#txt-password").val();
+        let data={"username":username,"password":password};
 
         $.ajax({
-            url: window.localStorage.getItem("ipurl")+"/kuryelogin",
+            url: window.localStorage.getItem("ipurl")+"/courierlogin",
             type: "POST",
             data: JSON.stringify(data),
             dataType: "json",
@@ -120,8 +120,11 @@ var login={
             success: function (data) {
 
                 if(!data.hasError){
-                    login.opensession(data.data.id,data.data.kuryeAdi);
-                    login.creategcm();
+
+                    login.creategcm(data.data.id);
+
+                    login.opensession(data.data.id,data.data.name);
+
                     common.showToast(data.msg,'long','center',0);
 
                 }else{
@@ -136,7 +139,7 @@ var login={
         if (typeof(Storage) !== "undefined") {
             window.localStorage.setItem("kuryeID",sessionKuryeId);
             window.localStorage.setItem("kuryeName",kuryeName);
-            if(window.localStorage.getItem("kuryeID")>0 && window.localStorage.getItem("kuryeID")!=""){
+            if(window.localStorage.getItem("kuryeID")>0 && window.localStorage.getItem("kuryeID")!==""){
                 window.location.href="index.html";
             }else{
                 common.showToast("Oturum açılamıyor. Lütfen yöneticinize başvurun!");
@@ -147,16 +150,18 @@ var login={
 
     },
 
-    creategcm: function () {
+    creategcm: function (courierId) {
 
-        var regid = window.localStorage.getItem("regid");
-        var kuryeID = window.localStorage.getItem("kuryeID");
-        var email = "";
-        if(regid!="" && regid!=null && kuryeID!="" && kuryeID>0) {
-            var data = {"regid": regid, "kuryeID": kuryeID, "email": email}
+        let regid = window.localStorage.getItem("regid");
+        let kuryeID = courierId;
+        let email = "";
+        //alert(regid);
+        //alert(kuryeID);
+        if(regid!=="" && regid!==null && kuryeID!=="" && parseInt(kuryeID)>0) {
+            let data = {"regid": regid, "courierId": parseInt(kuryeID), "email": email}
             <!--Passing those values to the insertregid.php file-->
             $.ajax({
-                url: window.localStorage.getItem("ipurl") + "/insertregid",
+                url: window.localStorage.getItem("ipurl") + "/setregid",
                 type: "POST",
                 data: JSON.stringify(data),
                 dataType: 'json',
@@ -170,6 +175,13 @@ var login={
                     //alert(data);
                     if (!data.hasError) {
                         return true;
+                    }else{
+                        alert(data.msg);
+                        window.localStorage.removeItem("kuryeID");
+                        window.localStorage.removeItem("kuryeName");
+                        window.localStorage.removeItem("ipurl");
+                        window.localStorage.removeItem("regid");
+                        window.location.href="login.html";
                     }
                 }
             });
@@ -180,25 +192,25 @@ var login={
     },
     setlocations: function () {
 
-        var regid = window.localStorage.getItem("regid");
-        var kuryeID = window.localStorage.getItem("kuryeID");
+        let regid = window.localStorage.getItem("regid");
+        let kuryeID = window.localStorage.getItem("kuryeID");
 
-        if(kuryeID!="" && kuryeID>0) {
+        if(kuryeID!=="" && kuryeID>0) {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
-                    var pos = {
+                    let pos = {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
                     };
 
-                    var latitude = position.coords.latitude;
-                    var longitude = position.coords.longitude;
+                    let latitude = position.coords.latitude;
+                    let longitude = position.coords.longitude;
 
 
 
-                    if (latitude != "" && longitude != "") {
+                    if (latitude !== "" && longitude !== "") {
 
-                        var data = {"regid": regid, "kuryeID": kuryeID, "latitude": latitude, "longitude": longitude}
+                        let data = {"regid": regid, "kuryeID": kuryeID, "latitude": latitude, "longitude": longitude}
                         <!--Passing those values to the insertregid.php file-->
                         $.ajax({
                             url: window.localStorage.getItem("ipurl") + "/insertposition",

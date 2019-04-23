@@ -155,8 +155,8 @@ let login={
         let regid = window.localStorage.getItem("regid");
         let kuryeID = courierId;
         let email = "";
-        alert(regid);
-        alert(kuryeID);
+        //alert(regid);
+        //alert(kuryeID);
         if(regid!=="" && regid!==null && kuryeID!=="" && parseInt(kuryeID)>0) {
             let data = {"regid": regid, "courierId": parseInt(kuryeID), "email": email}
             <!--Passing those values to the insertregid.php file-->

@@ -51,6 +51,48 @@ function Common() {
 
     };
 
+    this.isFalsy = function(value){
+        try{
+
+            return value === '' || value === null || value === undefined || value === false;
+
+        }catch(e){
+            this.showToast(e.message);
+        }
+    };
+
+
+    this.setAjaxRequest = function(url, data, callBackFunction, type){
+
+        try{
+            $.ajax({
+                url,
+                type,
+                data: JSON.stringify(data),
+                dataType: "json",
+                beforeSend(jqXHR, settings) {
+
+                },
+                headers: {
+                    'x-auth-token':'6de52eea2a6a0737d774f79af3f8c629',
+                    'Content-Type':'application/json',
+                    'Access-Control-Allow-Origin':'*',
+                    'X-Requested-With':'XMLHttpRequest',
+                    'Access-Control-Allow-Credentials':'true'
+                }
+            }).done((resolveData) => {
+                callBackFunction("success",resolveData);
+            }).fail((rejectData) => {
+                callBackFunction("error",rejectData);
+            });
+
+        }catch (e) {
+            this.showToast(e.message);
+            return {};
+        }
+
+    };
+
 
     this.showToast = function (message,duration,position,addPixelsY) {
 
@@ -109,6 +151,15 @@ function Common() {
     };
 
 
+    this.getDistricts = function () {
+
+    };
+
+
+    this.setSocket = function (emitMessage,data) {
+        let socket = io.connect("https://socket.kuryeotomasyon.com");
+        socket.emit(emitMessage,data);
+    }
 
 
 

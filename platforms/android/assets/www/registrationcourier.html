@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+    <script type="text/javascript">
+        if(window.localStorage.getItem("kuryeID")!=="" && window.localStorage.getItem("kuryeID")>0){
+            window.location.href="index.html";
+        }
+    </script>
+
+    <title>Kurye Otomasyon Sistemleri</title>
+
+    <!-- Bootstrap -->
+    <link href="vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- Animate.css -->
+    <link href="vendors/animate.css/animate.min.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="build/css/custom.min.css" rel="stylesheet">
+  </head>
+
+  <body class="login">
+    <div>
+      <a class="hiddenanchor" id="signup"></a>
+      <a class="hiddenanchor" id="signin"></a>
+
+      <div class="login_wrapper">
+        <div class="animate form login_form">
+          <section class="login_content">
+            <form>
+              <h1>Kurye Kayıt Paneli</h1>
+              <div>
+                <input type="text" class="form-control" placeholder="Ad Soyad" name="name" id="popupname" style="min-height: 45px" />
+              </div>
+              <div>
+                <input type="text" class="form-control" placeholder="Cep Telefonu" name="mobilePhone" id="popupmobilePhone" style="min-height: 45px" />
+              </div>
+              <div>
+                <input type="text" class="form-control" placeholder="Email" name="email" id="popupemail" style="min-height: 45px" />
+              </div>
+              <div>
+                <textarea rows="3" class="form-control" placeholder="Adres" name="address" id="popupaddress"></textarea>
+              </div>
+              <div style="margin-bottom: 15px; margin-top: 15px;">
+                <select class="form-control" name="tsmdistrict" id="popuptsmdistrict" style="min-height: 45px">
+                  <option value="">Semt Seçiniz...</option>
+                </select>
+              </div>
+              <div>
+                <input type="text" class="form-control" placeholder="TC Kimlik Numarası" name="tc" id="popuptc" style="min-height: 45px" max="11" />
+              </div>
+              <div style="margin-bottom: 15px; margin-top: 15px;">
+                <select name="bloodGroup" id="popupbloodGroup" class="form-control" style="min-height: 45px">
+                  <option value="">Kan grubu seçiniz...</option>
+                  <option value="A+">A Rh(+)</option>
+                  <option value="A-">A Rh(-)</option>
+                  <option value="B+">B Rh(+)</option>
+                  <option value="B-">B Rh(-)</option>
+                  <option value="AB+">AB Rh(+)</option>
+                  <option value="AB-">AB Rh(-)</option>
+                  <option value="0+">0 Rh(+)</option>
+                  <option value="0-">0 Rh(-)</option>
+
+                </select>
+              </div>
+              <div>
+                <input type="text" class="form-control" placeholder="Kullanıcıadı" name="webUsername" id="popupwebUsername" style="min-height: 45px">
+              </div>
+              <div>
+                <input type="password" class="form-control" placeholder="Şifre" name="popupwebPassword" id="popupwebPassword" style="min-height: 45px" />
+              </div>
+              <div>
+                <input type="button" class="btn btn-success" onclick="registerCourier.register()" value="Kaydol" style="width: 100%; min-height: 55px" />
+                <!--<a class="reset_pass" href="#">Şifremi Unuttum!</a>-->
+              </div>
+
+              <div class="clearfix"></div>
+
+              <div class="separator">
+
+
+                <div>
+                  <h1><i class="fa fa-paw"></i> Kurye Otomasyon Sistemleri </h1>
+                  <p>©2019 Tüm hakları saklıdır. <a href="https://kuryeotomasyon.com"><u>www.kuryeotomasyon.com</u></a></p>
+                </div>
+              </div>
+            </form>
+          </section>
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- VERY IMPORTANT!!!!!!!!!!! -->
+
+    <div class="app" style="display: none">
+      <h1>tbmsoft.xyz</h1>
+      <div id="deviceready" class="blink">
+        <p class="event listening"></p>
+        <p class="event received"></p>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="https://socket.kuryeotomasyon.com/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="vendors/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" charset="utf-8" src="push.js"></script>
+    <script type="text/javascript" src="js/registercourier.js"></script>
+
+
+    <!--<script type="text/javascript" charset="utf-8" src="js/push.js"></script>-->
+
+  </body>
+</html>

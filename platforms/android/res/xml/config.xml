@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.tbmyazilim.www" version="1.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.tbmyazilim.www" version="1.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <feature name="Whitelist">
         <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
         <param name="onload" value="true" />
@@ -34,14 +34,14 @@
     <feature name="LocationServices">
         <param name="android-package" value="fr.louisbl.cordova.locationservices.CordovaLocationServices" />
     </feature>
-    <name>Motorlu Kurye-tbmsoft</name>
+    <name>Motorlu Kurye-tsmsoft</name>
     <description>
         Kurye Otomasyon Sistemleri
     </description>
-    <author email="taneryzb@hotmail.com" href="https://tbmsoft.xyz">
+    <author email="taneryzb@hotmail.com" href="https://kuryeotomasyon.com">
         Kurye Otomasyon Sistemleri
     </author>
-    <content src="index.html" />
+    <content src="login.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -50,11 +50,11 @@
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
     <allow-intent href="market:*" />
-    <icon density="mdpi" src="www/res/icon/android/mipmap-mdpi/Courier-24848.png" />
-    <icon density="hdpi" src="www/res/icon/android/mipmap-hdpi/Courier-27272.png" />
-    <icon density="xhdpi" src="www/res/icon/android/mipmap-xhdpi/Courier-29696.png" />
-    <icon density="xxhdpi" src="www/res/icon/android/mipmap-xxhdpi/Courier-2144144.png" />
-    <icon density="xxxhdpi" src="www/res/icon/android/mipmap-xxxhdpi/Courier-2192192.png" />
+    <icon density="mdpi" src="www/res/icon/android/mipmap-mdpi/kos.png" />
+    <icon density="hdpi" src="www/res/icon/android/mipmap-hdpi/kos.png" />
+    <icon density="xhdpi" src="www/res/icon/android/mipmap-xhdpi/kos.png" />
+    <icon density="xxhdpi" src="www/res/icon/android/mipmap-xxhdpi/kos.png" />
+    <icon density="xxxhdpi" src="www/res/icon/android/mipmap-xxxhdpi/kos.png" />
     <preference name="loglevel" value="DEBUG" />
     <preference name="android-minSdkVersion" value="14" />
 </widget>
